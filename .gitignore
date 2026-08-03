@@ -1,0 +1,22 @@
+# 构建产物
+build/
+*.o
+*.elf
+*.hex
+*.bin
+*.map
+
+# IDE 配置
+.idea/
+.vscode/
+*.iml
+.cproject
+.project
+.settings/
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
+# CubeMX 备份
+*.backup
