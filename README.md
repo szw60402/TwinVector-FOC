@@ -102,7 +102,7 @@ cmake --build build/Debug
 CubeIDE 打开 `TwinVector.ioc` 也可直接编译调试（ST-Link V3 一线烧录）。
 
 **ESP32（Arduino IDE）**
-1. 打开 `firmware_esp32/esp32_dashboard.ino`
+1. 打开 `firmware_esp32/firmware_esp32.ino`
 2. 依赖库：WebSockets by Markus Sattler
 3. 选 ESP32C3 Dev Module → 上传
 
