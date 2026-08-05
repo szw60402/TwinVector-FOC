@@ -1,12 +1,12 @@
 # TwinVector
 
-> 双 MCU 实时 FOC 电机控制系统 · STM32G431 + ESP32-C3 · 无线仪表盘
+> 双 MCU 实时 FOC 电机控制系统 · STM32G431 + ESP32-C3 · 无线蓝牙透传
 
 ## 项目概述
 
-**TwinVector** 是一个在面包板上从零搭建的双 MCU FOC（磁场定向控制）电机控制系统。STM32G431CBU6 在 10kHz 中断内实时完成速度闭环控制链，ESP32-C3 自建 WiFi 热点将转速/角度/电压实时推送到手机浏览器。全代码手写，无第三方算法库。
+**TwinVector** 是一个在面包板上从零搭建的双 MCU FOC（磁场定向控制）电机控制系统。STM32G431CBU6 在 10kHz 中断内实时完成速度闭环控制链，ESP32-C3 通过 BLE 将转速/角度/电压实时推送到手机 App。全代码手写，无第三方算法库。
 
-> 核心亮点：电压模式 FOC 全链路 · 双 MCU 实时/非实时解耦 · 无线 WebSocket 仪表盘
+> 核心亮点：电压模式 FOC 全链路 · 双 MCU 实时/非实时解耦 · 无线 BLE 数据透传
 
 ---
 
@@ -18,7 +18,7 @@
 | **功率驱动** | DRV8313 3-PWM 模式，20kHz PWM |
 | **角度反馈** | AS5600 磁编码器，12 位 I2C @ 100kHz |
 | **通信** | LPUART1 @ 921600bps |
-| **仪表盘** | ESP32-C3 AP 热点 + WebSocket 81 端口 + 内嵌网页 |
+| **仪表盘** | ESP32-C3 BLE UART 无线透传（NimBLE）→ 手机 App |
 | **开发环境** | CubeMX 6.x + CMake + arm-none-eabi-gcc / Arduino IDE |
 
 ---
@@ -66,11 +66,11 @@ TIM1 更新中断 @10kHz（RCR=1）
   └─ 20ms 一帧 JSON → LPUART → ESP32
 ```
 
-**ESP32-C3 端（仪表盘）**
+**ESP32-C3 端（无线透传）**
 
-- AP 热点 `FOC-Dashboard`，IP 192.168.4.1
-- Serial1 @921600 收 JSON → WebSocket 广播（透传，浏览器解析）
-- 内嵌网页：大数字 RPM + 角度/Vq 卡片 + 状态徽章 + 实时曲线 + 断线重连
+- BLE 广播 `FOC-BT`（Nordic UART Service，标准协议）
+- Serial1 @921600 收 JSON → 蓝牙透传（手机 App 按行显示）
+- 手机 App：Serial Bluetooth Terminal（安卓）/ BlueSPP（苹果）
 
 ---
 
@@ -103,7 +103,7 @@ CubeIDE 打开 `TwinVector.ioc` 也可直接编译调试（ST-Link V3 一线烧�
 
 **ESP32（Arduino IDE）**
 1. 打开 `firmware_esp32/firmware_esp32.ino`
-2. 依赖库：WebSockets by Markus Sattler
+2. 依赖库：NimBLE-Arduino by h2zero
 3. 选 ESP32C3 Dev Module → 上传
 
 ---
@@ -111,8 +111,8 @@ CubeIDE 打开 `TwinVector.ioc` 也可直接编译调试（ST-Link V3 一线烧�
 ## 使用
 
 1. G431 上电：自动执行 对齐(500ms) → 速度闭环(默认 300rpm)
-2. 手机连接 WiFi `FOC-Dashboard`（无密码）
-3. 浏览器打开 `http://192.168.4.1` → 实时仪表盘
+2. 手机装 Serial Bluetooth Terminal，扫描连接 BLE 设备 `FOC-BT`
+3. App 里实时滚动 `{"rpm":300,"angle":180,"vq":1500,"temp":0,"st":2}` 数据帧
 
 数据帧格式：`{"rpm":300,"angle":180,"vq":1500,"temp":0,"st":2}`（st: 0=停机 1=对齐 2=闭环）
 
@@ -132,5 +132,5 @@ MIT
 ## 调试提示
 
 - 电机转向相反 → 交换任意两根电机相线（OUT1/OUT2 对调）
-- 仪表盘无数据 → 先看 G431 串口是否有 JSON 帧，再查 ESP32 串口日志
+- 手机无数据 → 先看 G431 串口是否有 JSON 帧，再查 ESP32 串口日志（BLE 是否被连上）
 - 编码器角度不变化 → 检查磁环径向充磁 + AS5600 与磁环间距 ≥1mm
