@@ -85,7 +85,6 @@ TwinVector-FOC/
 │   └── Src/ Inc/        # CubeMX 生成区
 ├── firmware_esp32/      # ESP32 仪表盘固件 (.ino)
 ├── TwinVector.ioc       # CubeMX 工程
-├── AGENTS.md            # 开发规范（分层/中断安全/代码风格）
 └── CMakeLists.txt       # CMake 构建（显式源文件列表）
 ```
 
