@@ -10,6 +10,14 @@
 
 ---
 
+## 实物照片
+
+![TwinVector 面包板实物](docs/images/hardware_full.jpg)
+
+> 面包板搭建：STM32G431 核心板、DRV8313 三相驱动、RS2205 无刷电机、电源模块。
+
+---
+
 ## 技术栈
 
 | 层面 | 技术 |
@@ -83,6 +91,7 @@ TwinVector-FOC/
 │   ├── drivers/         # 驱动层：as5600.c / drv8313.c
 │   ├── utils/           # 算法层：clarke_park.c / svpwm.c / pi_controller.c
 │   └── Src/ Inc/        # CubeMX 生成区
+├── docs/images/         # 实物照片
 ├── firmware_esp32/      # ESP32 仪表盘固件 (.ino)
 ├── TwinVector.ioc       # CubeMX 工程
 └── CMakeLists.txt       # CMake 构建（显式源文件列表）
